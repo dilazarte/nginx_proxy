@@ -8,18 +8,15 @@ const { infoSys } = require('./src/utils/dataInfo')
 const passport = require('./src/utils/passportLogin')
 require('dotenv').config()
 const parseArgs = require('minimist')
-const cluster = require('cluster')
-const numCPUs = require('os').cpus().length
 
 //utilizando minimist para setear puerto por defecto o recibirlo por parametro.-
 const defaultOp = {
-    default: {port: 8080, modo: 'fork'},
-    alias: {p:'port', m:'modo'}
+    default: {port: 8080},
+    alias: {p:'port'}
 };
 const args = parseArgs(process.argv.slice(2), defaultOp);
 
 const PORT = args.port;
-const MODE = args.modo;
 
 
 //rutas
@@ -105,29 +102,7 @@ io.on('connection', (socket) => {
 });
 
 
-
-//configurando para cluster
-if(MODE == 'cluster'){
-    if (cluster.isMaster) {
-        console.log(`PID ${process.pid}`);
-    
-        for (let index = 0; index < numCPUs; index++) {
-            cluster.fork();
-        }
-        cluster.on('exit', worker => {
-            console.log(`Master PID: ${process.pid}`);
-            console.log(`Worker ${worker.process.pid} died`);
-            cluster.fork(); //si muere uno se vuelve a iniciar con otro PID
-        });
-    } else {
-        const serverON = httpServer.listen(PORT, ()=>{
-            console.log(`Server on port ${PORT} -  mode: ${MODE} - PID: ${process.pid}`)
-        })
-        serverON.on('error', error=> console.log(`Error del servidor ${error}`))
-    }
-} else {
-    const serverON = httpServer.listen(PORT, ()=>{
-        console.log(`Server on port ${PORT} -  mode: ${MODE} - PID: ${process.pid}`)
-    })
-    serverON.on('error', error=> console.log(`Error del servidor ${error}`))
-}
+const serverON = httpServer.listen(PORT, ()=>{
+    console.log(`Server on port ${PORT} - PID: ${process.pid}`)
+})
+serverON.on('error', error=> console.log(`Error del servidor ${error}`))

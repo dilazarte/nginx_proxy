@@ -10,14 +10,21 @@ function getRandomNumObj (num){
         obj[num] = (obj[num] || 0) + 1;
     });
     return obj;
+    
 }
 
 function randomNum(min, max){
-    return Math.floor((Math.random() * (max - min + 1)) + min);
+    //return Math.floor((Math.random() * (max - min + 1)) + min);
+    return Math.floor(min + Math.random() * (max - min + 1))
 }
 
 
-process.on("message", num => {
-    let sum = getRandomNumObj(num)
-    process.send(sum);
+process.on("message", msg => {
+    if(msg === 'exit'){
+        process.exit()
+    }
+    else{
+        let sum = getRandomNumObj(msg)
+        process.send(sum);
+    }
 });

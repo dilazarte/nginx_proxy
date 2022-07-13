@@ -10,20 +10,11 @@ randomsNum.get('/', (req, res) => {
     const forked = fork('src/utils/randomsNum.js');
 
     forked.send(num);
-        forked.on('message', data => {
-            res.json({data: `PID ${process.pid}`, randoms: data})
+    forked.on('message', data => {
+        res.json({data: `PID ${process.pid}`, randoms: data})
+        forked.send('exit')
     })
-    // if(num){
-    //     forked.send(num);
-    //     forked.on('message', data => {
-    //         res.json(data)
-    //     })
-    // } else {
-    //     forked.send(100000000);
-    //     forked.on('message', data => {
-    //         res.json(data)
-    //     })
-    // }
+    
 })
 
 module.exports= randomsNum

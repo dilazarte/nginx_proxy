@@ -1,0 +1,37 @@
+*****Primera parte, para iniciar el server.js como fork o cluster*****
+
+Por consola con node
+- node server.js --port <8080 => por defecto> --modo <fork => por defecto>
+
+---Si se levanta en modo fork (por defecto), el comando:
+tasklist /fi "imagename eq node.exe" mostrara un solo proceso que es el principal
+cuando llegue un request a la ruta /api/random va a iniciar un subproceso (fork) y el mismo se va a terminar una vez que se finaliza la operacion.
+
+---Si se levanta en modo fork (por defecto) con nodemon , el comando:
+tasklist /fi "imagename eq node.exe" mostrara 2 procesos, el principal de node primero, y el fork (creado por nodemon).
+
+---Si se levanta en modo cluster, el comando:
+tasklist /fi "imagename eq node.exe" mostrara 9 procesos, el principal de node y los forks del cluster. Cuando se inicia el servidor siempre se va a mostrar los PID de los clusters para comparar con los que figurar al ejecutar el comando tasklist.-
+
+
+
+***Levantando con Forever***
+---Si se levanta con 'forever', el comando:
+tasklist /fi "imagename eq node.exe" mostrara 2 procesos, el principal y el creado por forever, el cual va a coincidir con el pid que figure al ejecutar 'forever list'.
+----A diferencia de node, forever si detecta que un proceso del fork se finaliza con el comando: taskkill /PID <pid> /f  lo va a volver a levantar con otro PID (se deja un console.log que informa cuando muere el proceso).
+
+
+---------------------------------------------------------
+
+
+*****Con el modulo pm2*****
+
+Para este caso ejecutar el archivo server2.js que ya está listo para levantar el servidor
+solo se necesita el parametro del puerto --port
+el comando seria asi:
+modo fork: pm2 start server2.js --name="NombreOpcional" --watch -- --port 8080 // (8080 por defecto)
+
+modo cluster: pm2 start server2.js --name="NombreOpcional2" --watch -i max -- --port 8081 // (8080 por defecto)
+
+
+para hacer las pruebas con nginx en la ruta /api/randoms, levantar en modo cluster en los puertos 8082, 8083, 8084, 8085. (con distintos nombres asi no da error)
